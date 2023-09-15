@@ -21,6 +21,7 @@ Edit the file `private/config.sh`, and set your values, including:
 - Orchestrator Password
 - Orchestrator Workflow ID for authorization
 - Shares address (e.g. `shares.example.com`)
+- an optional SAML domain name (e.g. `example.com`)
 
 It is assumed that the current user has `ssh` access to the Shares server, and `sudo` access on it too.
 
