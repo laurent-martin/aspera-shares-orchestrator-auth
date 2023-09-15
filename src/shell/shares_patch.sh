@@ -30,7 +30,7 @@ case "$1" in
                 break
             fi
             if test -f $controller_backup; then
-                echo "Backup already exists for $controller"
+                echo "Backup already exists for $controller: $controller_backup"
                 break
             fi
             echo "Patching $controller"
@@ -48,7 +48,6 @@ case "$1" in
     revert)
         echo "Reverting patch"
         for controller in "${!controllers[@]}"; do
-            #echo "$key ${test_var[$key]}"
             controller_file=$controller_dir/$controller
             controller_backup=$controller_file$backup_ext
             if test ! -f $controller_backup; then
