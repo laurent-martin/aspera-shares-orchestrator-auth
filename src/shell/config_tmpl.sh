@@ -4,3 +4,4 @@ orch_user=_fill_here_
 orch_pass=_fill_here_
 orch_workflow=_fill_here_
 shares_server=_fill_here_
+saml_domain=_fill_here_

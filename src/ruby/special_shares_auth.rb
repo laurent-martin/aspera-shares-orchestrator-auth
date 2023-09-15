@@ -13,6 +13,11 @@ class SpecialSharesAuth
     def check_auth(user, ip)
       begin
         @config = JSON.parse(File.read(__FILE__.gsub(/\.rb$/, '.json'))) if @config.nil?
+        return nil if \
+          @config['saml_domain'] &&
+          !@config['saml_domain'].empty? &&
+          user.end_with?("@#{@config['saml_domain']}")
+
         orch_url = @config['url']
         # API parameters
         params = {
@@ -36,21 +41,21 @@ class SpecialSharesAuth
         http_connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
         http_request = Net::HTTP::Get.new(orch_uri)
         http_response = http_connection.request(http_request)
-        raise "Validation Error: #{http_response.code}" unless http_response.code == '200'
+        raise "Orchestrator HTTP Error: #{http_response.code}" unless http_response.code == '200'
 
         result = JSON.parse(http_response.body)
         work_order = result['work_order']
         return nil if work_order['status'] == 'Complete'
         return work_order['statusDetails'] if work_order['status'] == 'Failed'
 
-        raise "#{work_order['status']}: #{work_order['statusDetails']}"
+        raise "Work order: #{work_order['status']}: #{work_order['statusDetails']}"
       rescue Exception => e
-        "Error in Special Auth: #{e}"
+        "Error in Special Auth: #{e.class} #{e.message}"
       end
     end
   end
 end
 # rubocop:enable all
 
-# msg = SpecialSharesAuth.check_auth('admin', '192.168.0.0')
-# puts("msg: #{msg}")
+#msg = SpecialSharesAuth.check_auth('admin', '192.168.0.0')
+#puts("msg: #{msg}")

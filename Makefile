@@ -12,15 +12,16 @@ SHARES_SCRIPTS=$(DIR_RB_SRC)special_shares_auth.rb $(DIR_RB_SRC)shares_patch.rb 
 $(DIR_GEN).exists:
 	mkdir -p $(DIR_GEN)
 	touch $@
-export orch_url orch_user orch_pass orch_workflow
-$(DIR_GEN)special_shares_auth.json: $(DIR_GEN).exists $(DIR_SH_SRC)special_shares_auth.json.tmpl
+export orch_url orch_user orch_pass orch_workflow saml_domain
+$(DIR_GEN)special_shares_auth.json: $(DIR_GEN).exists $(DIR_SH_SRC)special_shares_auth.json.tmpl $(DIR_PRIV)config.sh
 	envsubst < $(DIR_SH_SRC)special_shares_auth.json.tmpl > $(DIR_GEN)special_shares_auth.json
 # generate make file macros from shell variables
 $(DIR_GEN)config.make: $(DIR_GEN).exists $(DIR_PRIV)config.sh
 	env -i bash -c ". $(DIR_PRIV)config.sh;set|grep '^[a-z]'" > $(DIR_GEN)config.make
 $(DIR_PRIV)config.sh:
 	mkdir -p $(DIR_PRIV)
-	cp $(DIR_SH_SRC)config_tmpl.sh $(DIR_PRIV)config.sh
+	cp $(DIR_SH_SRC)config_tmpl.sh $(DIR_PRIV)config.sh.tmpl
+	@echo "Please edit $(DIR_PRIV)config.sh.tmpl and rename it to $(DIR_PRIV)config.sh" && exit 1
 template:
 	sed -e 's/=.*/=_fill_here_/' $(DIR_PRIV)config.sh > $(DIR_SH_SRC)config_tmpl.sh
 shares_download:
