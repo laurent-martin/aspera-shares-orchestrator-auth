@@ -32,8 +32,10 @@ shares_deploy: $(SHARES_SCRIPTS) $(DIR_GEN)special_shares_auth.json
 	scp $(SHARES_SCRIPTS) $(DIR_GEN)special_shares_auth.json $(shares_server):
 	ssh $(shares_server) sudo bash -c "'chmod a+x shares_patch.sh && ./shares_patch.sh apply'"
 shares_pack: $(SHARES_SCRIPTS) $(DIR_GEN)special_shares_auth.json
+	chmod a+x $(DIR_SH_SRC)shares_patch.sh
 	$(GNU_TAR) -czf $(DIR_GEN)shares_patch.tar.gz $(SHARES_SCRIPTS) $(DIR_GEN)special_shares_auth.json --transform 's,^.*/,,'
 shares_pack_tmpl: $(SHARES_SCRIPTS)
+	chmod a+x $(DIR_SH_SRC)shares_patch.sh
 	$(GNU_TAR) -czf $(DIR_GEN)shares_patch_tmpl.tar.gz $(SHARES_SCRIPTS) $(DIR_SH_SRC)special_shares_auth.json.tmpl --transform 's,^.*/,,'
 clean:
 	rm -fr $(DIR_GEN)
