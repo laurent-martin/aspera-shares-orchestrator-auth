@@ -1,8 +1,8 @@
 # Authorize a shares user based on IP address using Orchestrator
 
-This project allows activation of an additional step for user authentication.
+This project allows activation of an additional step for user authorization based on user's IP address.
 
-The current version is activated only for non-SAML users.
+This additional authorization is activated only for non-SAML users.
 
 ## Applying the patch for Shares directly
 
@@ -21,7 +21,7 @@ Edit the file `private/config.sh`, and set your values, including:
 - Orchestrator Password
 - Orchestrator Workflow ID for authorization
 - Shares address (e.g. `shares.example.com`)
-- an optional SAML domain name (e.g. `example.com`)
+- an optional list of SAML domain name (e.g. `example.com`)
 
 It is assumed that the current user has `ssh` access to the Shares server, and `sudo` access on it too.
 
@@ -47,7 +47,7 @@ To create a template patch, type:
 make shares_pack_tmpl
 ```
 
-This creates the file: `generated/shares_patch_tmpl.tar.gz` which can be transfered on the Shares server.
+This creates the file: `generated/shares_patch_tmpl.tar.gz` which can be transferred on the Shares server.
 
 ## Applying the patch on Shares server
 
@@ -58,7 +58,7 @@ Get the file: `shares_patch_tmpl.tar.gz` on the Shares server, and extract it, i
 - shares_patch.rb : The patch for Shares login function
 - shares_patch.sh : The script which installs the patch
 
-Rename the file special_shares_auth.json.tmpl to special_shares_auth.json, and edit it to set your values.
+Rename the file `special_shares_auth.json.tmpl` to `special_shares_auth.json`, and edit it to set your values.
 
 Then execute:
 
