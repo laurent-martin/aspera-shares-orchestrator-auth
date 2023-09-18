@@ -7,6 +7,7 @@ declare -A controllers
 # files to patch
 controllers['sessions_controller.rb']=sanitize
 controllers['api/base_controller.rb']='user = oauth2'
+patch_dir="$(dirname "$0")"
 # folder where patched files are located
 controller_dir=/opt/aspera/shares/u/shares/app/controllers
 shares_lib_dir=/opt/aspera/shares/u/shares/lib
@@ -17,9 +18,15 @@ set -e
 case "$1" in
     apply)
         echo "Applying patch"
-        if test ! -f $(dirname "$0")/$auth_config; then
+        if test ! -f $patch_dir/$auth_config; then
             echo "Config file not found"
             exit 1
+        fi
+        echo "Checking $patch_dir/$auth_config"
+        if jq --version > /dev/null 2>&1; then
+            jq < $patch_dir/$auth_config > /dev/null
+        else
+            echo "jq not found, no check performed"
         fi
         for controller in "${!controllers[@]}"; do
             controller_file=$controller_dir/$controller
@@ -36,12 +43,12 @@ case "$1" in
             echo "Patching $controller"
             line=$(grep -n "${controllers[$controller]}" $controller_file|cut -f1 -d:)
             head -n $(($line+1)) $controller_file > $controller_tmp
-            cat $(dirname "$0")/shares_patch.rb >> $controller_tmp
+            cat $patch_dir/shares_patch.rb >> $controller_tmp
             tail -n +$(($line+2)) $controller_file >> $controller_tmp
             mv $controller_file $controller_backup
             mv $controller_tmp $controller_file
         done
-        cp $(dirname "$0")/$auth_lib_file $(dirname "$0")/$auth_config $shares_lib_dir
+        cp $patch_dir/$auth_lib_file $patch_dir/$auth_config $shares_lib_dir
         /etc/init.d/aspera-shares restart
         echo "Patched"
         ;;
@@ -50,11 +57,11 @@ case "$1" in
         for controller in "${!controllers[@]}"; do
             controller_file=$controller_dir/$controller
             controller_backup=$controller_file$backup_ext
-            if test ! -f $controller_backup; then
+            if test -f $controller_backup; then
+                mv -f $controller_backup $controller_file
+            else
                 echo "Backup not found for $controller"
-                break
             fi
-            mv -f $controller_backup $controller_file
         done
         rm -f $shares_lib_dir/$auth_lib_file $shares_lib_dir/$auth_config
         /etc/init.d/aspera-shares restart

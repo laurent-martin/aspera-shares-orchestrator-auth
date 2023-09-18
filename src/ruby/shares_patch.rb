@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 # This code is added to:
-# /opt/aspera/shares/u/shares/app/controllers/sessions_controller.rb : create
-# /opt/aspera/shares/u/shares/app/controllers/api/base_controller.rb : authenticate
+# /opt/aspera/shares/u/shares/app/controllers/sessions_controller.rb : web : create (only non-saml)
+# /opt/aspera/shares/u/shares/app/controllers/api/base_controller.rb : API : authenticate (have user object)
 
 require 'special_shares_auth'
 error_message = SpecialSharesAuth.check_auth(__method__.eql?(:authenticate) ? user.name : params[:username], request.ip)

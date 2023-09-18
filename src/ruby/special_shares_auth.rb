@@ -10,16 +10,13 @@ require 'json'
 # This class is used to authenticate users against a remote system.
 class SpecialSharesAuth
   class << self
-    def check_auth(user, ip)
+    def check_auth(user_login, ip)
       begin
         @config = JSON.parse(File.read(__FILE__.gsub(/\.rb$/, '.json'))) if @config.nil?
-        return nil if \
-          @config['saml_domain'] &&
-          !@config['saml_domain'].empty? &&
-          user.end_with?("@#{@config['saml_domain']}")
+        return nil if @config['saml_domains']&.any? { |domain| user_login.end_with?("@#{domain}") }
 
         orch_url = @config['url']
-        # API parameters
+        # Orchestrator API parameters
         params = {
           login: @config['user'],
           password: @config['pass'],
@@ -29,7 +26,7 @@ class SpecialSharesAuth
         }
         # workflow parameters
         external_parameters = {
-          username: user,
+          username: user_login,
           ipaddress: ip
         }
         external_parameters.each do |key, value|
@@ -57,5 +54,5 @@ class SpecialSharesAuth
 end
 # rubocop:enable all
 
-#msg = SpecialSharesAuth.check_auth('admin', '192.168.0.0')
-#puts("msg: #{msg}")
+# msg = SpecialSharesAuth.check_auth('admin', '192.168.0.0')
+# puts("msg: #{msg}")
