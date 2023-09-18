@@ -6,7 +6,17 @@
 # /opt/aspera/shares/u/shares/app/controllers/api/base_controller.rb : API : authenticate (have user object)
 
 require 'special_shares_auth'
-error_message = SpecialSharesAuth.check_auth(__method__.eql?(:authenticate) ? user.name : params[:username], request.ip)
+error_message =
+  if __method__.eql?(:authenticate)
+    if user.saml?
+      nil
+    else
+      SpecialSharesAuth.check_auth(user.name, request.ip)
+    end
+  else
+    SpecialSharesAuth.check_auth(params[:username], request.ip)
+  end
+
 if error_message
   if __method__.eql?(:authenticate)
     render json: ApiError.new(user_message: error_message), status: :unauthorized
