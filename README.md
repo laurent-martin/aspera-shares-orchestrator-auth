@@ -1,15 +1,67 @@
-# Authorize a shares user based on IP address using Orchestrator
+# Authorize an Aspera Shares user based on IP address using Aspera Orchestrator
 
-This project allows activation of an additional step for user authorization based on user's IP address.
+This project allows an additional step for user authorization based on user's IP address using Aspera Orchestrator.
 
 This additional authorization is activated only for non-SAML users.
 
-## Applying the patch for Shares directly
+## Applying the patch on Shares server
+
+### Get the patch file
+
+Transfer the file: `shares_patch_tmpl.tar.gz` to the Shares server, and extract it, it will provide those files:
+
+- shares_patch.sh : The script which installs the patch
+- special_shares_auth.rb : The library that calls Aspera Orchestrator for the validation
+- special_shares_auth.json.tmpl : The JSON configuration with Orchestrator credentials
+- shares_patch_api.rb and shares_patch_login.rb: The patches for Aspera Shares login functions (API and web session)
+
+Rename the file `special_shares_auth.json.tmpl` to `special_shares_auth.json`, and edit it to set your values.
+
+Example:
+
+```json
+{
+    "url": "https://orchestrator.example.com/aspera/orchestrator",
+    "user": "orchestrator_user",
+    "pass": "password_for_above",
+    "workflow":"12345"
+}
+```
+
+### Apply the patch
+
+To apply the patch:
+
+```bash
+sudo ./shares_patch.sh apply
+```
+
+This will patch **Aspera Shares** and restart it, wait a minute for Shares to restart.
+
+### Remove the patch
+
+To remove the patch:
+
+```bash
+sudo ./shares_patch.sh revert
+```
+
+## Creating the patch from repo
+
+To create a template patch, type:
+
+```bash
+make
+```
+
+This creates the file: `generated/shares_patch_tmpl.tar.gz` which can be transferred on the Shares server.
+
+## Applying the patch remotely
 
 After repo cloning, type:
 
 ```bash
-make
+make init
 ```
 
 This will create the file: `private/config.sh`
@@ -21,7 +73,6 @@ Edit the file `private/config.sh`, and set your values, including:
 - Orchestrator Password
 - Orchestrator Workflow ID for authorization
 - Shares address (e.g. `shares.example.com`)
-- an optional list of SAML domain name (e.g. `example.com`)
 
 It is assumed that the current user has `ssh` access to the Shares server, and `sudo` access on it too.
 
@@ -32,44 +83,3 @@ make shares_deploy
 ```
 
 This will generate the JSON config file and transfer the necessary files to the Shares server, and apply the patch.
-
-To create the pre-populated patch, type:
-
-```bash
-make shares_pack
-```
-
-## Creating template patch
-
-To create a template patch, type:
-
-```bash
-make shares_pack_tmpl
-```
-
-This creates the file: `generated/shares_patch_tmpl.tar.gz` which can be transferred on the Shares server.
-
-## Applying the patch on Shares server
-
-Get the file: `shares_patch_tmpl.tar.gz` on the Shares server, and extract it, it will provide those files:
-
-- special_shares_auth.rb : The Ruby script which calls Orchestrator
-- special_shares_auth.json.tmpl : The JSON configuration with Orchestrator credentials
-- shares_patch.rb : The patch for Shares login function
-- shares_patch.sh : The script which installs the patch
-
-Rename the file `special_shares_auth.json.tmpl` to `special_shares_auth.json`, and edit it to set your values.
-
-Then execute:
-
-```bash
-sudo ./shares_patch.sh apply
-```
-
-This will patch Shares and restart it, wait a few seconds.
-
-To remove the patch:
-
-```bash
-sudo ./shares_patch.sh revert
-```
