@@ -31,7 +31,8 @@ class SpecialSharesAuth
         # workflow parameters
         external_parameters = {
           username: user_login,
-          ipaddress: ip
+          ipaddress: ip,
+          groups: JSON.generate(authorizable_user.groups.map(&:name))
         }
         external_parameters.each do |key, value|
           params["external_parameters[#{key}]"] = value
