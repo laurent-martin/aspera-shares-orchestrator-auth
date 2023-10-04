@@ -3,13 +3,18 @@ if [ "$(id -u)" -ne 0 ]; then
     echo "Current user must be root."
     exit 1
 fi
-declare -A controllers
+declare -A ctrl_line_match
+declare -A ctrl_patch
 # files to patch
-controllers['sessions_controller.rb']=sanitize
-controllers['api/base_controller.rb']='user = oauth2'
+ctrl_line_match['sessions_controller.rb']=sanitize
+ctrl_line_match['api/base_controller.rb']='user = oauth2'
+ctrl_patch['sessions_controller.rb']=shares_patch_web.rb
+ctrl_patch['api/base_controller.rb']=shares_patch_api.rb
+# location of patch files
 patch_dir="$(dirname "$0")"
 # folder where patched files are located
 controller_dir=/opt/aspera/shares/u/shares/app/controllers
+# patch common code will be here
 shares_lib_dir=/opt/aspera/shares/u/shares/lib
 auth_lib_file=special_shares_auth.rb
 auth_config=special_shares_auth.json
@@ -28,7 +33,8 @@ case "$1" in
         else
             echo "jq not found, no check performed"
         fi
-        for controller in "${!controllers[@]}"; do
+        # loop on key (file path)
+        for controller in "${!ctrl_line_match[@]}"; do
             controller_file=$controller_dir/$controller
             controller_backup=$controller_file$backup_ext
             controller_tmp=$controller_file.tmp
@@ -41,9 +47,9 @@ case "$1" in
                 break
             fi
             echo "Patching $controller"
-            line=$(grep -n "${controllers[$controller]}" $controller_file|cut -f1 -d:)
+            line=$(grep -n "${ctrl_line_match[$controller]}" $controller_file|cut -f1 -d:)
             head -n $(($line+1)) $controller_file > $controller_tmp
-            cat $patch_dir/shares_patch.rb >> $controller_tmp
+            cat $patch_dir/"${ctrl_patch[$controller]}" >> $controller_tmp
             tail -n +$(($line+2)) $controller_file >> $controller_tmp
             mv $controller_file $controller_backup
             mv $controller_tmp $controller_file
@@ -53,14 +59,14 @@ case "$1" in
         echo "Patched"
         ;;
     revert)
-        echo "Reverting patch"
-        for controller in "${!controllers[@]}"; do
+        for controller in "${!ctrl_line_match[@]}"; do
             controller_file=$controller_dir/$controller
             controller_backup=$controller_file$backup_ext
             if test -f $controller_backup; then
+                echo "Reverting $controller"
                 mv -f $controller_backup $controller_file
             else
-                echo "Backup not found for $controller"
+                echo "Backup not found for $controller" 1>&2
             fi
         done
         rm -f $shares_lib_dir/$auth_lib_file $shares_lib_dir/$auth_config
