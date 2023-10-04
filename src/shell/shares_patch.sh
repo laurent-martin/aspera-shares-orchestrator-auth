@@ -6,8 +6,8 @@ fi
 declare -A ctrl_line_match
 declare -A ctrl_patch
 # files to patch
-ctrl_line_match['sessions_controller.rb']=sanitize
-ctrl_line_match['api/base_controller.rb']='user = oauth2'
+ctrl_line_match['sessions_controller.rb']=' login$'
+ctrl_line_match['api/base_controller.rb']=' if user$'
 ctrl_patch['sessions_controller.rb']=shares_patch_web.rb
 ctrl_patch['api/base_controller.rb']=shares_patch_api.rb
 # location of patch files
@@ -48,9 +48,9 @@ case "$1" in
             fi
             echo "Patching $controller"
             line=$(grep -n "${ctrl_line_match[$controller]}" $controller_file|cut -f1 -d:)
-            head -n $(($line+1)) $controller_file > $controller_tmp
+            head -n $(($line+0)) $controller_file > $controller_tmp
             cat $patch_dir/"${ctrl_patch[$controller]}" >> $controller_tmp
-            tail -n +$(($line+2)) $controller_file >> $controller_tmp
+            tail -n +$(($line+1)) $controller_file >> $controller_tmp
             mv $controller_file $controller_backup
             mv $controller_tmp $controller_file
         done
