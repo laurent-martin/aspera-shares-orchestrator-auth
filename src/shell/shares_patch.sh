@@ -4,12 +4,14 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 declare -A ctrl_line_match
-declare -A ctrl_patch
+declare -A ctrl_patch_rege
 # files to patch
-ctrl_line_match['sessions_controller.rb']=' login$'
+#ctrl_line_match['sessions_controller.rb']=' login$'
+#ctrl_patch_rege['sessions_controller.rb']=shares_patch_web.rb
+ctrl_line_match['login_base_controller.rb']=' user = User'
+ctrl_patch_rege['login_base_controller.rb']=shares_patch_login.rb
 ctrl_line_match['api/base_controller.rb']=' if user$'
-ctrl_patch['sessions_controller.rb']=shares_patch_web.rb
-ctrl_patch['api/base_controller.rb']=shares_patch_api.rb
+ctrl_patch_rege['api/base_controller.rb']=shares_patch_api.rb
 # location of patch files
 patch_dir="$(dirname "$0")"
 # folder where patched files are located
@@ -49,7 +51,7 @@ case "$1" in
             echo "Patching $controller"
             line=$(grep -n "${ctrl_line_match[$controller]}" $controller_file|cut -f1 -d:)
             head -n $(($line+0)) $controller_file > $controller_tmp
-            cat $patch_dir/"${ctrl_patch[$controller]}" >> $controller_tmp
+            cat $patch_dir/"${ctrl_patch_rege[$controller]}" >> $controller_tmp
             tail -n +$(($line+1)) $controller_file >> $controller_tmp
             mv $controller_file $controller_backup
             mv $controller_tmp $controller_file
