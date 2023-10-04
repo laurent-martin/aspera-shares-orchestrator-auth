@@ -4,7 +4,6 @@ require 'net/http'
 require 'openssl'
 require 'json'
 # rubocop:disable Lint/RescueException
-# rubocop:disable Style/RedundantBegin
 # rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/AbcSize
 # rubocop:disable Metrics/CyclomaticComplexity
@@ -12,8 +11,11 @@ require 'json'
 # This class is used to authenticate users against a remote system.
 class SpecialSharesAuth
   class << self
-    def check_auth(user_login, ip)
+    def check_auth(authorizable_user, ip)
+      return nil if authorizable_user.saml?
+
       begin
+        user_login = authorizable_user.name
         @config = JSON.parse(File.read(__FILE__.gsub(/\.rb$/, '.json'))) if @config.nil?
         return nil if @config['saml_domains']&.any? { |domain| user_login.end_with?("@#{domain}") }
 
