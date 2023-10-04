@@ -7,7 +7,7 @@ GNU_TAR=gtar
 include $(DIR_GEN)config.make
 all:: $(DIR_GEN)config.make $(DIR_GEN)special_shares_auth.json
 # patch for Shares
-SHARES_SCRIPTS=$(DIR_RB_SRC)special_shares_auth.rb $(DIR_RB_SRC)shares_patch.rb $(DIR_SH_SRC)shares_patch.sh
+SHARES_SCRIPTS=$(DIR_RB_SRC)special_shares_auth.rb $(DIR_RB_SRC)shares_patch_web.rb $(DIR_RB_SRC)shares_patch_api.rb $(DIR_SH_SRC)shares_patch.sh
 # contains generated and downloaded files
 $(DIR_GEN).exists:
 	mkdir -p $(DIR_GEN)
