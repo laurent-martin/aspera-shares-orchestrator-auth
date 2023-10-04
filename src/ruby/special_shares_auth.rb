@@ -7,6 +7,8 @@ require 'json'
 # rubocop:disable Style/RedundantBegin
 # rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/PerceivedComplexity
 # This class is used to authenticate users against a remote system.
 class SpecialSharesAuth
   class << self
@@ -32,13 +34,14 @@ class SpecialSharesAuth
         external_parameters.each do |key, value|
           params["external_parameters[#{key}]"] = value
         end
-        orch_uri = URI.parse("#{orch_url}/api/initiate?#{URI.encode_www_form(params)}")
+        orch_uri = URI.parse("#{orch_url}/api/initiate")
+        orch_uri.query = URI.encode_www_form(params)
         http_connection = Net::HTTP.new(orch_uri.host, orch_uri.port)
         http_connection.use_ssl = true
         http_connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
         http_request = Net::HTTP::Get.new(orch_uri)
         http_response = http_connection.request(http_request)
-        raise "Orchestrator HTTP Error: #{http_response.code}" unless http_response.code == '200'
+        return "Special Auth: Orchestrator Call Error: #{http_response.inspect}" unless http_response.code == '200'
 
         result = JSON.parse(http_response.body)
         work_order = result['work_order']
@@ -47,7 +50,7 @@ class SpecialSharesAuth
 
         raise "Work order: #{work_order['status']}: #{work_order['statusDetails']}"
       rescue Exception => e
-        "Error in Special Auth: #{e.class} #{e.message}"
+        "Special Auth: Error: #{e.class} #{e.message}"
       end
     end
   end

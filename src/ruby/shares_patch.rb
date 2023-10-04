@@ -1,29 +1,23 @@
 # BEGIN PATCH
-# frozen_string_literal: true
-
-# This code is added to:
-# /opt/aspera/shares/u/shares/app/controllers/sessions_controller.rb : web : create (only non-saml)
-# /opt/aspera/shares/u/shares/app/controllers/api/base_controller.rb : API : authenticate (have user object)
-
 require 'special_shares_auth'
-error_message =
-  if __method__.eql?(:authenticate)
-    if user.saml?
-      nil
-    else
-      SpecialSharesAuth.check_auth(user.name, request.ip)
+if __FILE__.end_with?('/base_controller.rb')
+  # /opt/aspera/shares/u/shares/app/controllers/api/base_controller.rb
+  # API : authenticate (have user object)
+  unless user.saml?
+    error_message = SpecialSharesAuth.check_auth(user.name, request.ip)
+    if error_message
+      render json: ApiError.new(user_message: error_message), status: :unauthorized
+      return
     end
-  else
-    SpecialSharesAuth.check_auth(params[:username], request.ip)
   end
-
-if error_message
-  if __method__.eql?(:authenticate)
-    render json: ApiError.new(user_message: error_message), status: :unauthorized
-  else
+elsif __FILE__.end_with?('/sessions_controller.rb')
+  # /opt/aspera/shares/u/shares/app/controllers/sessions_controller.rb
+  # web : create (only non-saml)
+  error_message = SpecialSharesAuth.check_auth(params[:username], request.ip)
+  if error_message
     flash.now[:error] = error_message
     render :new
+    return
   end
-  return
 end
 # END PATCH
