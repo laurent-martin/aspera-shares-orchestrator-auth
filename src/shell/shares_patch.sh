@@ -3,24 +3,26 @@ if [ "$(id -u)" -ne 0 ]; then
     echo "Current user must be root."
     exit 1
 fi
-declare -A ctrl_line_match
-declare -A ctrl_patch_rege
-# files to patch
-#ctrl_line_match['sessions_controller.rb']=' login$'
-#ctrl_patch_rege['sessions_controller.rb']=shares_patch_web.rb
-ctrl_line_match['login_base_controller.rb']=' user = User'
-ctrl_patch_rege['login_base_controller.rb']=shares_patch_login.rb
-ctrl_line_match['api/base_controller.rb']=' if user$'
-ctrl_patch_rege['api/base_controller.rb']=shares_patch_api.rb
-# location of patch files
+# main folder of patch
 patch_dir="$(dirname "$0")"
-# folder where patched files are located
+# main folder under which patched files are located
 controller_dir=/opt/aspera/shares/u/shares/app/controllers
+# extension of backup files (original files)
+backup_ext=.bak
+# regex of line after which to insert patch
+declare -A src_line_match
+# code to insert
+declare -A src_patch_file
+# files to patch, key is path relative to $controller_dir
+src_line_match['login_base_controller.rb']=' user = User'
+src_patch_file['login_base_controller.rb']=shares_patch_login.rb
+src_line_match['api/base_controller.rb']=' if user$'
+src_patch_file['api/base_controller.rb']=shares_patch_api.rb
 # patch common code will be here
 shares_lib_dir=/opt/aspera/shares/u/shares/lib
 auth_lib_file=special_shares_auth.rb
 auth_config=special_shares_auth.json
-backup_ext=.bak
+# fail on any error
 set -e
 case "$1" in
     apply)
@@ -35,40 +37,40 @@ case "$1" in
         else
             echo "jq not found, no check performed"
         fi
-        # loop on key (file path)
-        for controller in "${!ctrl_line_match[@]}"; do
-            controller_file=$controller_dir/$controller
-            controller_backup=$controller_file$backup_ext
-            controller_tmp=$controller_file.tmp
-            if grep -q 'BEGIN PATCH' $controller_file; then
-                echo "Patch already applied to $controller"
+        # loop on key (source file path under $controller_dir)
+        for src_rel_path in "${!src_line_match[@]}"; do
+            src_full_path=$controller_dir/$src_rel_path
+            src_backup=$src_full_path$backup_ext
+            src_patched_tmp=$src_full_path.tmp
+            if grep -q 'BEGIN PATCH' $src_full_path; then
+                echo "Patch already applied to $src_rel_path"
                 break
             fi
-            if test -f $controller_backup; then
-                echo "Backup already exists for $controller: $controller_backup"
+            if test -f $src_backup; then
+                echo "Backup already exists for $src_rel_path: $src_backup"
                 break
             fi
-            echo "Patching $controller"
-            line=$(grep -n "${ctrl_line_match[$controller]}" $controller_file|cut -f1 -d:)
-            head -n $(($line+0)) $controller_file > $controller_tmp
-            cat $patch_dir/"${ctrl_patch_rege[$controller]}" >> $controller_tmp
-            tail -n +$(($line+1)) $controller_file >> $controller_tmp
-            mv $controller_file $controller_backup
-            mv $controller_tmp $controller_file
+            echo "Patching $src_rel_path"
+            line=$(grep -n "${src_line_match[$src_rel_path]}" $src_full_path|cut -f1 -d:)
+            head -n $(($line+0)) $src_full_path > $src_patched_tmp
+            cat $patch_dir/"${src_patch_file[$src_rel_path]}" >> $src_patched_tmp
+            tail -n +$(($line+1)) $src_full_path >> $src_patched_tmp
+            mv $src_full_path $src_backup
+            mv $src_patched_tmp $src_full_path
         done
         cp $patch_dir/$auth_lib_file $patch_dir/$auth_config $shares_lib_dir
         /etc/init.d/aspera-shares restart
         echo "Patched"
         ;;
     revert)
-        for controller in "${!ctrl_line_match[@]}"; do
-            controller_file=$controller_dir/$controller
-            controller_backup=$controller_file$backup_ext
-            if test -f $controller_backup; then
-                echo "Reverting $controller"
-                mv -f $controller_backup $controller_file
+        for src_rel_path in "${!src_line_match[@]}"; do
+            src_full_path=$controller_dir/$src_rel_path
+            src_backup=$src_full_path$backup_ext
+            if test -f $src_backup; then
+                echo "Reverting $src_rel_path"
+                mv -f $src_backup $src_full_path
             else
-                echo "Backup not found for $controller" 1>&2
+                echo "Backup not found for $src_rel_path" 1>&2
             fi
         done
         rm -f $shares_lib_dir/$auth_lib_file $shares_lib_dir/$auth_config
