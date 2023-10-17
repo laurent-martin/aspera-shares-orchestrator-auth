@@ -1,0 +1,169 @@
+---
+- !ruby/object:Workflow
+  attributes:
+    id: 1657
+    portable_id: fd2d8c80-0f45-013c-83ce-06a979b8ae4f
+    generatedFrom: 6752
+    name: Whitelist
+    comments: ''
+    revision_id: 41
+    created_by: 1
+    run_as: SYSTEM
+    created_at: 2023-07-28 07:26:36.000000000 Z
+    updated_at: 2023-10-17 12:11:03.000000000 Z
+    folder_id: 139
+    description: ''
+    max_running: 
+    purge_after_days: 
+    cleanup_after_days: 
+    tags: 
+    source_revision: Whitelist|41
+    templates: 
+    user_lock: 
+    locked_by: 
+- !ruby/object:Whiteboard
+  attributes:
+    xml_export: |
+      <?xml version="1.0" encoding="ISO-8859-1"?>
+      <Workflow id="1657">
+      <Start x="100" y="50" id="47ead834-cbab-dad7-4cd3-863573d19032">
+      <Synch_factor>0</Synch_factor><Prerequisites></Prerequisites><Parameters></Parameters></Start>
+      <Error x="1200" y="350" id="9eb46017-cad3-1733-4f7b-d7f83d5817cc">
+      <Synch_factor>0</Synch_factor><Prerequisites></Prerequisites></Error>
+      <End x="1200" y="50" id="c6ea7999-611d-a7b0-fe59-09b9fc995c36">
+      <Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='1c2e6e2a-e7e7-00ca-a51e-8f68e15b1fd2' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites></End>
+      <Fail x="1200" y="200" id="2c964cd8-6674-6712-f4f3-36601cf84079">
+      <Synch_factor>0</Synch_factor><Prerequisites></Prerequisites></Fail>
+      <Steps><Step x="260" y="40" id="8b93bf30-5777-105c-f034-223befde35d4">
+      <Action_id>318</Action_id><Step_name>Config Parameters</Step_name><Step_type>MassParameterSetter</Step_type><Version>0.5.6</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='47ead834-cbab-dad7-4cd3-863573d19032' status='true' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs></Inputs><Outputs><Output name='Step_information'></Output><Output name='Whitelist File'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="450" y="40" id="08243254-8c03-12c5-0445-e41a3c8b531c">
+      <Action_id>1771</Action_id><Step_name>Temp Filename</Step_name><Step_type>CustomRuby</Step_type><Version>0.6.1</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='8b93bf30-5777-105c-f034-223befde35d4' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='final_file'><Map_to type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Input></Inputs><Outputs><Output name='temporary'></Output><Output name='Step_information'></Output><Carry_thru type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="650" y="40" id="179117dd-8197-48ca-d2b4-42d4735ae33f">
+      <Action_id>195</Action_id><Step_name>Whitelist</Step_name><Step_type>FileGenerator</Step_type><Version>0.4.0</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='08243254-8c03-12c5-0445-e41a3c8b531c' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='Target_file_path'><Map_to type='output' name='temporary' step_type='CustomRuby' action_id='1771' step_name='Temp Filename' /></Input></Inputs><Outputs><Output name='Generated_file_path'></Output><Output name='Step_information'></Output><Carry_thru type='output' name='temporary' step_type='CustomRuby' action_id='1771' step_name='Temp Filename' /><Carry_thru type='output' name='Step_information' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /><Carry_thru type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="840" y="40" id="0f115d0c-91ad-2fd4-056e-2f9a8a01cd6a">
+      <Action_id>1772</Action_id><Step_name>Validate Format</Step_name><Step_type>CustomRuby</Step_type><Version>0.6.1</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='179117dd-8197-48ca-d2b4-42d4735ae33f' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='yaml_file_to_validate'><Map_to type='output' name='temporary' step_type='CustomRuby' action_id='1771' step_name='Temp Filename' /></Input></Inputs><Outputs><Output name='Step_information'></Output><Carry_thru type='output' name='Step_information' step_type='CustomRuby' action_id='1771' step_name='Temp Filename' /><Carry_thru type='output' name='temporary' step_type='CustomRuby' action_id='1771' step_name='Temp Filename' /><Carry_thru type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="1030" y="40" id="1c2e6e2a-e7e7-00ca-a51e-8f68e15b1fd2">
+      <Action_id>326</Action_id><Step_name>commit whitelist</Step_name><Step_type>LocalFileOperation</Step_type><Version>1.0.3</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='0f115d0c-91ad-2fd4-056e-2f9a8a01cd6a' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='source'><Map_to type='output' name='temporary' step_type='CustomRuby' action_id='1771' step_name='Temp Filename' /><Processing>input_value = [input_value]</Processing></Input><Input name='target'><Map_to type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Input></Inputs><Outputs><Output name='File_list'></Output><Output name='Failed_list'></Output><Output name='Step_information'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      </Steps><Parameters></Parameters><Notes><Note x="650" y="200" id="ad2aec12-68fc-9b26-1265-590fa999d8c7" collapsed="false">
+      <Text>This%20workflow%20compiles%20the%20white%20list%20to%20accept%20users%20and%20groups.%0A%0AOnce%20list%20is%20modified%252C%20execute%20this%20workflow%20once</Text></Note>
+      <Note x="240" y="180" id="d6ed407c-596a-7af8-5cb4-15dc139fd71d" collapsed="false">
+      <Text>Edit%20parameters%252C%20use%20the%20same%20set%20in%20both%20workflows.%0A%0AThe%20YAML%20is%20the%20path%20to%20compiled%20whihelist.%0A%0AThe%20node%20name%20is%20the%20name%20of%20the%20node%20configured%20in%20Workflows-%3ERemoteNodes</Text></Note>
+      </Notes></Workflow>
+    id: 6752
+    workflow_id: 1657
+    error_free: 1
+    created_by: 1
+    revision_id: 41
+    created_at: 2023-10-17 12:11:02.000000000 Z
+    updated_at: 2023-10-17 12:11:03.000000000 Z
+    revisions_log: 
+- MassParameterSetter__318: !ruby/object:MassParameterSetter
+    attributes:
+      use_external_storage: 0
+      id: 318
+      name: Shares user IP Validation parameters
+      comments: For Shares Validation
+      parameters: "{'Whitelist File'=>['/opt/aspera/var/whitelist.yaml','string']}"
+      created_at: 2023-07-28 13:13:33.000000000 Z
+      updated_at: 2023-10-17 12:03:42.000000000 Z
+      config_name: ''
+  CustomRuby__1771: !ruby/object:CustomRuby
+    attributes:
+      id: 1771
+      name: W1657__Temp Filename
+      comments: ''
+      execute_code: outputs['temporary'] = inputs['final_file'] + '.tmp'
+      validateInputs_code: ''
+      outputsSpec_code: ''
+      inputsSpec_code: ''
+      created_at: 2023-09-07 14:56:10.000000000 Z
+      updated_at: 2023-10-17 12:05:42.000000000 Z
+      mandatoryInputs: "{'final_file'=>'string'}"
+      optionalInputs: "{}"
+      typedOutputs: "{'temporary'=>'string'}"
+      use_code_from_github: 0
+      github_token: ''
+      github_repo: ''
+      github_file_path: ''
+      github_branch_name: ''
+      github_user_name: ''
+      github_hostname: ''
+      verify_ssl: 1
+      use_cached: 0
+  CustomRuby__1772: !ruby/object:CustomRuby
+    attributes:
+      id: 1772
+      name: W1657__Validate Format
+      comments: ''
+      execute_code: YAML.parse(File.read(inputs['yaml_file_to_validate']))
+      validateInputs_code: ''
+      outputsSpec_code: ''
+      inputsSpec_code: ''
+      created_at: 2023-09-07 14:59:19.000000000 Z
+      updated_at: 2023-10-17 12:06:28.000000000 Z
+      mandatoryInputs: "{'yaml_file_to_validate'=>'string'}"
+      optionalInputs: ''
+      typedOutputs: ''
+      use_code_from_github: 0
+      github_token: ''
+      github_repo: ''
+      github_file_path: ''
+      github_branch_name: ''
+      github_user_name: ''
+      github_hostname: ''
+      verify_ssl: 1
+      use_cached: 0
+  FileGenerator__195: !ruby/object:FileGenerator
+    attributes:
+      id: 195
+      name: W1657__Whitelist
+      comments: ''
+      file_body_template: |
+        ---
+        admin:
+          - 192.168.0.1
+        #  - 129.41.46.7
+          - 82.64.20.244
+          - 0.0.0.0/0
+      file_body_path: ''
+      target_file_path: ''
+      return_file_as_output: 0
+      required_inputs: ''
+      optional_inputs: ''
+      created_at: 2023-09-07 15:00:09.000000000 Z
+      updated_at: 2023-10-17 12:11:00.000000000 Z
+      suppress_linefeeds: 0
+      append: 0
+  LocalFileOperation__326: !ruby/object:LocalFileOperation
+    attributes:
+      id: 326
+      name: W1657__commit whitelist
+      comments: ''
+      operation: move
+      sources: ''
+      target: ''
+      overwrite_flag: 1
+      base: ''
+      created_at: 2023-09-07 15:23:04.000000000 Z
+      updated_at: 2023-10-17 12:06:58.000000000 Z
+      fail_on_incomplete: 1
+      chmod: ''
+      uid: ''
+      guid: ''
+      recursive: 0
+      preserve_timestamp: 0
+      block_size: 
+      expose_explicit_failed_list: 0
+      is_hard_link: 0
+      fail_on_empty: 0
+      validate_source: 0
+- MassParameterSetter__318: []
+  CustomRuby__1771: []
+  CustomRuby__1772: []
+  FileGenerator__195: []
+  LocalFileOperation__326: []
+- {}
+- MassParameterSetter: 0.5.6
+  CustomRuby: 0.6.1
+  FileGenerator: 0.4.0
+  LocalFileOperation: 1.0.3

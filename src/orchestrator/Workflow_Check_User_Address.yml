@@ -1,0 +1,206 @@
+---
+- !ruby/object:Workflow
+  attributes:
+    id: 1666
+    portable_id: 4355a580-3526-013c-2f67-06a979b8ae4f
+    generatedFrom: 6754
+    name: Check User Address
+    comments: "Created from revision #2 from workflow 'Shares Filtering: All'\r\n
+      \       "
+    revision_id: 23
+    created_by: 1
+    run_as: SYSTEM
+    created_at: 2023-09-14 12:15:05.000000000 Z
+    updated_at: 2023-10-17 12:12:15.000000000 Z
+    folder_id: 139
+    description: ''
+    max_running: 
+    purge_after_days: 
+    cleanup_after_days: 
+    tags: 
+    source_revision: Check User Address|23
+    templates: 
+    user_lock: 
+    locked_by: 
+- !ruby/object:Whiteboard
+  attributes:
+    xml_export: |
+      <?xml version="1.0" encoding="ISO-8859-1"?>
+      <Workflow id="1666">
+      <Start x="100" y="50" id="3fb219c3-160b-92b6-eb99-e1ace440e0d4">
+      <Synch_factor>0</Synch_factor><Prerequisites></Prerequisites><Parameters><Parameter id='2ae8f72f-a1a9-45ca-48d6-8389bb4dbc6c' router='draw2d.ManhattanConnectionRouter' /><Parameter id='f757945c-f436-d185-79a3-701c3c6c0df5' router='draw2d.ManhattanConnectionRouter' /><Parameter id='984a77fe-d25c-0378-6e7e-9b938eb901eb' router='draw2d.ManhattanConnectionRouter' /></Parameters></Start>
+      <Error x="1155" y="290" id="ea60a4ba-649b-3ee1-c484-178e50a9c138">
+      <Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='fe86b820-1782-c278-b024-1fbeacfcb939' status='Error' router='draw2d.ManhattanConnectionRouter' /></Prerequisites></Error>
+      <End x="1155" y="50" id="d5b2d5b3-d90b-6966-d8f6-f41fabc70efb">
+      <Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='c08c0a05-87d6-39cf-7479-d771bef9ffad' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites></End>
+      <Fail x="1155" y="190" id="f7d4c297-231d-3d0a-a37d-f4ce6dbc607e">
+      <Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='11f8599d-a2b5-804f-d193-3eebe80c57b5' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites></Fail>
+      <Steps><Step x="900" y="40" id="c08c0a05-87d6-39cf-7479-d771bef9ffad">
+      <Action_id>227</Action_id><Step_name>IP CHECK OK</Step_name><Step_type>ExitStatus</Step_type><Version>0.0.3</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='fe86b820-1782-c278-b024-1fbeacfcb939' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs></Inputs><Outputs><Output name='Complete_status_message'></Output><Output name='Failed_status_message'></Output><Output name='Error_status_message'></Output><Output name='Step_information'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="900" y="180" id="11f8599d-a2b5-804f-d193-3eebe80c57b5">
+      <Action_id>228</Action_id><Step_name>IP CHECK FAILED</Step_name><Step_type>ExitStatus</Step_type><Version>0.0.3</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='fe86b820-1782-c278-b024-1fbeacfcb939' status='Failed' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='username'><Map_to type='global' name='username' /></Input><Input name='client_address'><Map_to type='global' name='ipaddress' /></Input></Inputs><Outputs><Output name='Complete_status_message'></Output><Output name='Failed_status_message'></Output><Output name='Error_status_message'></Output><Output name='Step_information'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="720" y="40" id="fe86b820-1782-c278-b024-1fbeacfcb939">
+      <Action_id>1774</Action_id><Step_name>Check IP on List</Step_name><Step_type>CustomRuby</Step_type><Version>0.6.1</Version><Failed_attempts>1</Failed_attempts><Failed_retryFor>0</Failed_retryFor><Failed_retryForUnit>86400</Failed_retryForUnit><Failed_retryDelay>0</Failed_retryDelay><Error_attempts>1</Error_attempts><Error_retryFor>0</Error_retryFor><Error_retryForUnit>86400</Error_retryForUnit><Error_retryDelay>0</Error_retryDelay><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='5ebf918a-cc84-7e55-66bf-3f226f8d39ff' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='user_ip'><Map_to type='global' name='ipaddress' /></Input><Input name='allowed_list'><Map_to type='output' name='allowed_list' step_type='CustomRuby' action_id='1775' step_name='Allowed Addresses' /></Input></Inputs><Outputs><Output name='Step_information'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="550" y="40" id="5ebf918a-cc84-7e55-66bf-3f226f8d39ff">
+      <Action_id>1775</Action_id><Step_name>Allowed Addresses</Step_name><Step_type>CustomRuby</Step_type><Version>0.6.1</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='662240d4-7d7b-999d-e8b5-ef4cb06c6e63' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='username'><Map_to type='global' name='username' /></Input><Input name='whitelist_yaml'><Map_to type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Input><Input name='group_list'><Map_to type='output' name='group_list' step_type='CustomRuby' action_id='1779' step_name='Groups' /></Input></Inputs><Outputs><Output name='allowed_list'></Output><Output name='Step_information'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="210" y="40" id="8d6bb571-1d6e-657c-c2f8-4aa0a1fa2db3">
+      <Action_id>318</Action_id><Step_name>Config Parameters</Step_name><Step_type>MassParameterSetter</Step_type><Version>0.5.6</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='3fb219c3-160b-92b6-eb99-e1ace440e0d4' status='true' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs></Inputs><Outputs><Output name='Step_information'></Output><Output name='Whitelist File'></Output></Outputs><comments>{}</comments><weight>0</weight></Step>
+      <Step x="370" y="40" id="662240d4-7d7b-999d-e8b5-ef4cb06c6e63">
+      <Action_id>1779</Action_id><Step_name>Groups</Step_name><Step_type>CustomRuby</Step_type><Version>0.6.1</Version><Synch_factor>0</Synch_factor><Prerequisites><Prerequisite id='8d6bb571-1d6e-657c-c2f8-4aa0a1fa2db3' status='Complete' router='draw2d.ManhattanConnectionRouter' /></Prerequisites><Parameters></Parameters><Inputs><Input name='groups_json'><Map_to type='global' name='groups' /></Input></Inputs><Outputs><Output name='group_list'></Output><Output name='Step_information'></Output><Carry_thru type='output' name='Whitelist File' step_type='MassParameterSetter' action_id='318' step_name='Config Parameters' /></Outputs><comments>{}</comments><weight>0</weight></Step>
+      </Steps><Parameters><Parameter x="10" y="50" id="2ae8f72f-a1a9-45ca-48d6-8389bb4dbc6c">
+      <Value></Value><Value_type>string</Value_type><Name>username</Name><Runtime_override>true</Runtime_override><Runtime_optional>false</Runtime_optional><Comments>The Shares username to validate, typically an email</Comments></Parameter>
+      <Parameter x="10" y="140" id="f757945c-f436-d185-79a3-701c3c6c0df5">
+      <Value></Value><Value_type>string</Value_type><Name>ipaddress</Name><Runtime_override>true</Runtime_override><Runtime_optional>false</Runtime_optional><Comments>The IP address of the user</Comments></Parameter>
+      <Parameter x="10" y="240" id="984a77fe-d25c-0378-6e7e-9b938eb901eb">
+      <Value></Value><Value_type>string</Value_type><Name>groups</Name><Runtime_override>true</Runtime_override><Runtime_optional>false</Runtime_optional><Comments>The JSON encoded list of grouos the user belong to.</Comments></Parameter>
+      </Parameters><Notes><Note x="228" y="233" id="3ed6865f-9f1c-0688-f459-b0f70947077b" collapsed="false">
+      <Text>This%20workflow%20is%20started%20by%20Shares%20upon%20user%20login%20to%20check%20if%20the%20user%20is%20allowed.</Text></Note>
+      </Notes></Workflow>
+    id: 6754
+    workflow_id: 1666
+    error_free: 1
+    created_by: 1
+    revision_id: 23
+    created_at: 2023-10-17 12:12:14.000000000 Z
+    updated_at: 2023-10-17 12:12:14.000000000 Z
+    revisions_log: 
+- ExitStatus__227: !ruby/object:ExitStatus
+    attributes:
+      id: 227
+      name: W1666__IP CHECK OK
+      comments: ''
+      complete_status: Address accepted
+      failed_status: ''
+      error_status: ''
+      created_at: 2023-09-14 12:15:05.000000000 Z
+      updated_at: 2023-10-17 12:12:10.000000000 Z
+  ExitStatus__228: !ruby/object:ExitStatus
+    attributes:
+      id: 228
+      name: W1666__IP CHECK FAILED
+      comments: ''
+      complete_status: ''
+      failed_status: 'User <%=username%> is not allowed from <%=client_address%>,
+        please contact the administrator: admin@example.com'
+      error_status: ''
+      created_at: 2023-09-14 12:15:05.000000000 Z
+      updated_at: 2023-10-17 11:27:36.000000000 Z
+  CustomRuby__1774: !ruby/object:CustomRuby
+    attributes:
+      id: 1774
+      name: W1666__Check IP on List
+      comments: ''
+      execute_code: |2
+          # lambda to convert ip address to integer
+          ip_to_integer = ->(ip) { ip.split('.').map(&:to_i).inject { |result, octet| (result << 8) + octet } }
+          # lambda to validate an ipv4 address format
+          valid_ip = ->(ip) { !/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.match(ip).nil? }
+          # This code takes 2 parameters
+          # @param ip_address : the ip address to check
+          # @param ip_or_range : the ip address or range to check against
+          ip_address = inputs['user_ip']
+          return STATUS_ERROR unless valid_ip.call(ip_address)
+
+          allowed_list = inputs['allowed_list']
+          return STATUS_FAILED, 'No allowed IP or Mask found' if allowed_list.empty?
+
+          allowed_list.each do |ip_or_range|
+            # split the ip address and range into ip and mask bits
+            range_ip, mask_bits = ip_or_range.split('/')
+            # number of bits on right to dismiss for comparison
+            shift_bits = mask_bits.nil? ? 0 : 32 - mask_bits.to_i
+            # return STATUS_ERROR unless valid_ip.call(range_ip)
+            return STATUS_COMPLETE if ip_to_integer.call(range_ip) >> shift_bits == ip_to_integer.call(ip_address) >> shift_bits
+          end
+          return STATUS_FAILED, "No match found for #{ip_address} in #{allowed_list}"
+      validateInputs_code: ''
+      outputsSpec_code: ''
+      inputsSpec_code: ''
+      created_at: 2023-09-14 12:15:05.000000000 Z
+      updated_at: 2023-10-17 12:08:30.000000000 Z
+      mandatoryInputs: "{'user_ip'=>'string', 'allowed_list'=>'array'}"
+      optionalInputs: ''
+      typedOutputs: ''
+      use_code_from_github: 0
+      github_token: ''
+      github_repo: ''
+      github_file_path: ''
+      github_branch_name: ''
+      github_user_name: ''
+      github_hostname: ''
+      verify_ssl: 1
+      use_cached: 0
+  CustomRuby__1775: !ruby/object:CustomRuby
+    attributes:
+      id: 1775
+      name: W1666__Allowed Addresses
+      comments: ''
+      execute_code: |
+        user_name = inputs['username']
+        white_list_by_name = YAML.load_file(inputs['whitelist_yaml'])
+        outputs['allowed_list'] = white_list = []
+        white_list.concat(white_list_by_name[user_name]) if white_list_by_name.key?(user_name)
+        inputs['group_list'].each do |group|
+          white_list.concat(white_list_by_name[group]) if white_list_by_name.key?(group)
+        end
+        return STATUS_COMPLETE
+      validateInputs_code: ''
+      outputsSpec_code: ''
+      inputsSpec_code: ''
+      created_at: 2023-09-14 12:15:05.000000000 Z
+      updated_at: 2023-10-17 11:26:11.000000000 Z
+      mandatoryInputs: "{'username'=>'string', 'group_list'=>'array', 'whitelist_yaml'=>'string'}"
+      optionalInputs: "{}"
+      typedOutputs: "{'allowed_list'=>'array'}"
+      use_code_from_github: 0
+      github_token: ''
+      github_repo: ''
+      github_file_path: ''
+      github_branch_name: ''
+      github_user_name: ''
+      github_hostname: ''
+      verify_ssl: 1
+      use_cached: 0
+  CustomRuby__1779: !ruby/object:CustomRuby
+    attributes:
+      id: 1779
+      name: W1666__Groups
+      comments: ''
+      execute_code: outputs['group_list']=JSON.parse(inputs['groups_json'])
+      validateInputs_code: ''
+      outputsSpec_code: ''
+      inputsSpec_code: ''
+      created_at: 2023-10-04 15:16:07.000000000 Z
+      updated_at: 2023-10-17 12:04:02.000000000 Z
+      mandatoryInputs: "{'groups_json'=>'string'}"
+      optionalInputs: ''
+      typedOutputs: "{'group_list'=>'array'}"
+      use_code_from_github: 0
+      github_token: ''
+      github_repo: ''
+      github_file_path: ''
+      github_branch_name: ''
+      github_user_name: ''
+      github_hostname: ''
+      verify_ssl: 1
+      use_cached: 0
+  MassParameterSetter__318: !ruby/object:MassParameterSetter
+    attributes:
+      use_external_storage: 0
+      id: 318
+      name: Shares user IP Validation parameters
+      comments: For Shares Validation
+      parameters: "{'Whitelist File'=>['/opt/aspera/var/whitelist.yaml','string']}"
+      created_at: 2023-07-28 13:13:33.000000000 Z
+      updated_at: 2023-10-17 12:03:42.000000000 Z
+      config_name: ''
+- ExitStatus__227: []
+  ExitStatus__228: []
+  CustomRuby__1774: []
+  CustomRuby__1775: []
+  CustomRuby__1779: []
+  MassParameterSetter__318: []
+- {}
+- ExitStatus: 0.0.3
+  CustomRuby: 0.6.1
+  MassParameterSetter: 0.5.6

@@ -12,6 +12,7 @@ require 'json'
 class SpecialSharesAuth
   class << self
     def check_auth(authorizable_user, ip)
+      # SAML user pass through
       return nil if authorizable_user.saml?
 
       begin
@@ -59,6 +60,3 @@ class SpecialSharesAuth
   end
 end
 # rubocop:enable all
-
-# msg = SpecialSharesAuth.check_auth('admin', '192.168.0.0')
-# puts("msg: #{msg}")
