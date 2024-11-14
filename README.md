@@ -1,6 +1,6 @@
 # Authorize an Aspera Shares user based on IP address using Aspera Orchestrator
 
-This project allows an additional step for user authorization based on user's IP address using Aspera Orchestrator.
+This project adds a webhook in Aspera shares for UI and API to add an additional step for user authorization based on user's IP address using Aspera Orchestrator.
 
 This additional authorization is activated only for non-SAML users.
 
@@ -22,7 +22,7 @@ make
 
 This creates the file: `generated/shares_patch_tmpl.tar.gz` which can be transferred on the Shares server.
 
-Else you may also get the 5 files listed below from the repository.
+Alternatively, you may also get the 5 files listed below from the repository.
 
 ### Get the patch file
 
@@ -87,7 +87,10 @@ Edit the file `private/config.sh`, and set your values, including:
 - Orchestrator Workflow ID for authorization
 - Shares address (e.g. `shares.example.com`)
 
-It is assumed that the current user has `ssh` access to the Shares server, and `sudo` access on it too.
+Pre-requisites:
+
+- the current user has `ssh` access to the Shares server
+- and `sudo` access on it too.
 
 To deploy on the Shares server, type:
 
